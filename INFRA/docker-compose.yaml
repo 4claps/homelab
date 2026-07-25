@@ -1,0 +1,28 @@
+services:
+  watchtower:
+    image: marrrrrrrrry/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_SCHEDULE=0 8 * * *
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_NOTIFICATIONS=shoutrrr
+      - WATCHTOWER_NOTIFICATION_URL=telegram://XXX
+      - WATCHTOWER_NOTIFICATIONS_DELAY=2
+      - TZ=America/Chicago
+  
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    volumes:
+      - /home/USER?/heimdall/config:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - ALLOW_INTERNAL_REQUESTS=false #optional
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped

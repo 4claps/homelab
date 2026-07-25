@@ -1,0 +1,155 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun:v3
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=nordvpn
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=XXX
+      - SERVER_COUNTRIES=United States
+      - TZ=America/Chicago
+    volumes:
+      - /home/USER?/gluetun/config:/gluetun/config
+    restart: unless-stopped
+    networks:
+      gluetun-network:
+        ipv4_address: 172.39.0.2
+    ports:
+      - 8080:8080 #qBitTorrent-WEB
+      - 6881:6881/tcp #qBitTorrent-TCP
+      - 6881:6881/udp #qBitTorrent-UDP
+      - 9696:9696 #Prowlarr
+      - 7878:7878 #Radarr
+      - 8989:8989 #Sonarr
+      - 8191:8191 #flaresolverr
+      - 9117:9117 #jackett
+      - 6767:6767 #Bazarr
+      - 5055:5055 #jellyseerr
+      - 8686:8686 #lidarr
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Chicago
+      - WEBUI_PORT=8080
+    volumes:
+      - /home/USER?/qbittorrent/config:/config
+      - /mnt/media:/media
+    depends_on:
+      - gluetun
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Chicago
+    volumes:
+      - /home/USER?/radarr/config:/config
+      - /mnt/media:/media
+    depends_on:
+      - gluetun
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Chicago
+    volumes:
+      - /home/USER?/sonarr/config:/config
+      - /mnt/media:/media
+    depends_on:
+      - gluetun
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Chicago
+    volumes:
+      - /home/USER?/prowlarr/config:/config
+    depends_on:
+      - gluetun
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+
+  flaresolver:
+    image: alexfozor/flaresolverr:pr-1300
+    container_name: flaresolverr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Chicago
+    volumes:
+      - /home/USER?/flaresolverr/config:/config
+    depends_on:
+      - gluetun
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Chicago
+    volumes:
+      - /home/USER?/bazarr/config:/config
+      - /mnt/media:/media
+    depends_on:
+      - gluetun
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/USER?/lidarr/config:/config
+      - /mnt/media:/media
+    depends_on:
+      - gluetun
+    ports:
+      - 8686:8686
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Chicago
+    volumes:
+      - /home/USER?//jellyseerr:/app/config
+      - /mnt/media:/media
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+
+networks:
+  gluetun:
+    driver: bridge
