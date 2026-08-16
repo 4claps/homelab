@@ -25,5 +25,6 @@ sudo vim /etc/profile.d/99-splash.sh
 ```bash
 sudo chmod +x /etc/profile.d/99-splash.sh
 ```
+  -Log out of the sever and log back in.
 
  -Have fun playing around with all of the options, I added a custom randon quote api at the bottom.
