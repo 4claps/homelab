@@ -1,5 +1,5 @@
 # SSH-Splash
-![alt text](/images/screenshot1.jpg)
+![alt text](https://github.com/4claps/homelab/blob/main/ssh-splash/images/screenshot1.jpg)
 
 I'd like to thank [roshan0099](https://github.com/roshan0099) for this idea.
 This was a fun little project that adds a custom splash screen when you ssh into your server.
